@@ -74,7 +74,7 @@ The resulting population is opted-in users with matching source records, not all
 2. **Handle updates deliberately.** Replace the new-key-only selection where mutable events require updates. Choose a lookback window or change timestamp based on measured source behavior, then test reruns and late arrivals.
 3. **Clarify reporting semantics.** Consider renaming `amount_sold` to `purchase_event_count` in a coordinated model/report change. Preserve the current name until consumers are updated.
 4. **Strengthen input checks.** Add relationship, null-key, boolean normalization, and uniqueness coverage based on actual source guarantees.
-5. **Simplify inherited configuration.** Align project configuration names, document dependencies, and replace starter CI/CD jobs with project-owned jobs before treating automation as operational.
+5. **Simplify inherited configuration.** Align project configuration names, document dependencies, and introduce project-owned CI checks if needed. The inherited cloud workflows are archived; the Airflow DAG documents the separate scheduled model-run path.
 6. **Add reproducible evidence.** Include sanitized build results, sample outputs, and reporting screenshots when available. Do not infer successful execution or business impact from the presence of code.
 
 These are future improvements, not features claimed by the current implementation.

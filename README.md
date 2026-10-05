@@ -1,6 +1,6 @@
 # Retail Analytics Data Modelling
 
-**Snowflake · dbt Core · SQL · Data quality**
+**Snowflake · dbt Core · Airflow · SQL · Data quality**
 
 A retail analytics transformation project that turns user journeys, product details, customer attributes, and inventory records into focused reporting models. The repository contains **nine dbt models**: one staging model, four dimensions, and four fact/aggregate models.
 
@@ -12,6 +12,7 @@ The models support questions such as: Which products attract engagement? Which s
 - **Review the SQL:** start with [user journey staging](models/data_mart/stg_user_journey_SX.sql), then the [daily product aggregate](models/data_mart/fact_product_aggregate_SX.sql).
 - **Inspect the design:** read the [model guide and trade-offs](docs/model-guide.md).
 - **Run the project:** follow the [Snowflake setup guide](docs/setup.md).
+- **Review automation:** inspect the [Airflow DAG and deployment guide](docs/orchestration.md).
 
 ## What the project demonstrates
 
@@ -23,6 +24,7 @@ The models support questions such as: Which products attract engagement? Which s
 | Reporting aggregates | A product/day table summarizes search, view, cart, and purchase flags. |
 | Data quality | Column-level null checks, three SQL data tests, and three unit-test definitions. |
 | Documentation | Source declarations, column descriptions, lineage, and explicit metric definitions. |
+| Orchestration | An Airflow DAG schedules `dbt run` daily, with one retry after 30 seconds. |
 
 ## Data flow
 
@@ -41,6 +43,10 @@ flowchart TD
     R["Source: product_data"] --> DP["dim_product_SX"]
     I["Source: inventory_data"] --> DI["dim_inventory_SX"]
 ```
+
+## Scheduled execution
+
+The [Airflow DAG](dags/dbt_dag.py) runs dbt Core on an Airflow worker once per day. dbt submits model SQL to Snowflake and handles the dependencies shown above. The task invokes `dbt run`; it does not automatically execute the test suite. See [orchestration.md](docs/orchestration.md) for configuration, runtime requirements, and changes made to the uploaded script for portability.
 
 ## Reporting outputs
 
@@ -91,11 +97,12 @@ Read [setup.md](docs/setup.md) first for source requirements, dependency notes, 
 | [`macros/`](macros/) | Helper macros, including target-schema naming behavior. |
 | [`docs/`](docs/) | Setup instructions and modelling decisions. |
 | [`brave_data/`](brave_data/) | Starter CSVs, separate from the active source model. |
-| [`.github/workflows/`](.github/workflows/) | Existing dbt Cloud workflow templates; require separately configured jobs. |
+| [`dags/`](dags/) | Airflow orchestration of daily dbt model runs. |
+| [`archive/dbt-cloud/`](archive/dbt-cloud/) | Inactive inherited cloud workflow templates and API helper. |
 
 ## Scope and next steps
 
-This repository presents the **warehouse transformation and testing layer**. Extraction/loading scripts, Airflow DAGs, Power BI reports, and measured business results are not included here.
+This repository presents **warehouse transformation, test definitions, and Airflow orchestration**. Extraction/loading scripts, Power BI reports, and measured business results are not included here. The DAG requires a configured runtime and accessible Snowflake sources; its presence does not establish a currently running deployment.
 
 The current incremental predicates admit unseen keys, but skip corrections to existing keys. The next modelling priorities are deterministic deduplication, explicit grain validation, late-update handling, and incremental test coverage. Details are recorded in the [model guide](docs/model-guide.md#design-trade-offs-and-next-steps).
 
