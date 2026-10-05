@@ -13,3 +13,14 @@ logs/
 
 .ruff_cache
 __pycache__
+# Local connection settings and environment variants
+profiles.yml
+.env.*
+!.env.example
+
+# Python, editor, and macOS artifacts
+__pycache__/
+*.py[cod]
+.vscode/
+__MACOSX/
+._*
