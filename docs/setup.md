@@ -90,11 +90,11 @@ dbt docs serve --profiles-dir .
 
 Generated `target/`, `logs/`, and installed `dbt_packages/` are local artifacts and should remain untracked. A full refresh rebuilds incremental tables; use it deliberately in a development schema when changed source records must be reprocessed.
 
-## Existing automation
+## Automation
 
-The GitHub workflows are inherited dbt Cloud scaffolding with Snowflake, BigQuery, and PostgreSQL jobs and hard-coded account/project/job identifiers. They depend on `DBT_CLOUD_API_KEY` and separately configured dbt Cloud jobs. Their presence does not establish a working deployment for this repository.
+The [Airflow DAG](../dags/dbt_dag.py) invokes dbt Core daily. Follow the [orchestration guide](orchestration.md) to configure its worker paths and credentials. It runs models with `dbt run`; the existing tests remain available for separate execution.
 
-Review or replace those jobs before relying on automated runs. No Airflow DAG is included in the current repository.
+The inherited dbt Cloud GitHub workflows have been moved to [archive/dbt-cloud/](../archive/dbt-cloud/README.md). Their original Snowflake, BigQuery, and PostgreSQL jobs require external account/job configuration and a dbt Cloud API key. They are retained for reference and are no longer active workflows on branches containing this change.
 
 ## dbt references
 
